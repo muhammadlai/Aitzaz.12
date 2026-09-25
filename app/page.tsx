@@ -19,6 +19,9 @@ type Task = {
   status: "Draft" | "Approved";
 };
 
+type Client = { id:number; name:string; email:string; company:string; taskTitle:string; status:"Lead"|"Active"|"Completed"; };
+type EarningsEntry = { id:number; taskTitle:string; clientName:string; amount:string; status:"Pending"|"Paid"; note:string; };
+
 type Opportunity = {
   id: number;
   title: string;
@@ -43,6 +46,8 @@ export default function Home() {
   const [items, setItems] = useState(seed);
   const [emailConnected, setEmailConnected] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [earnings, setEarnings] = useState<EarningsEntry[]>([]);
 
   const filtered = useMemo(() => items.filter(o =>
     (category === "All" || o.category === category) &&
@@ -93,8 +98,8 @@ export default function Home() {
         {tab === "overview" && <Overview setTab={setTab} emailConnected={emailConnected} opportunities={items.length}/>}
         {tab === "opportunities" && <OpportunityPanel filtered={filtered} query={query} setQuery={setQuery} category={category} setCategory={setCategory} save={save} createTask={createTask}/>}
         {tab === "tasks" && <TaskPanel tasks={tasks} setTasks={setTasks} />}
-        {tab === "clients" && <ClientPanel />}
-        {tab === "earnings" && <EarningsPanel />}
+        {tab === "clients" && <ClientPanel clients={clients} setClients={setClients} tasks={tasks} />}
+        {tab === "earnings" && <EarningsPanel earnings={earnings} setEarnings={setEarnings} tasks={tasks} clients={clients} />}
         {tab === "email" && <EmailPanel connected={emailConnected} onConnect={() => setEmailConnected(true)} />}
       </section>
     </main>
@@ -240,19 +245,65 @@ function TaskPanel({ tasks, setTasks }: { tasks: Task[]; setTasks: React.Dispatc
   </div>;
 }
 
-function ClientPanel() {
-  return <section className="panel">
-    <div className="panelHead"><div><h3>Client Workspace</h3><p>Client records will be connected to the backend</p></div><BriefcaseBusiness size={18}/></div>
-    <div className="empty">No client records yet. Backend connection is required for persistent clients.</div>
-  </section>;
+function ClientPanel({ clients, setClients, tasks }: { clients: Client[]; setClients: React.Dispatch<React.SetStateAction<Client[]>>; tasks: Task[] }) {
+  const [name,setName]=useState("");
+  const [email,setEmail]=useState("");
+  const [company,setCompany]=useState("");
+  const [taskTitle,setTaskTitle]=useState(tasks[0]?.title ?? "");
+
+  const addClient=()=>{
+    if(!name.trim()) return;
+    setClients(prev=>[...prev,{id:Date.now(),name:name.trim(),email:email.trim(),company:company.trim(),taskTitle,status:"Lead"}]);
+    setName(""); setEmail(""); setCompany("");
+  };
+
+  return <div className="grid">
+    <section className="panel">
+      <div className="panelHead"><div><h3>Client Workspace</h3><p>Create and track client records locally</p></div><BriefcaseBusiness size={18}/></div>
+      <label className="fieldLabel">Client name</label><input className="taskInput" value={name} onChange={e=>setName(e.target.value)} placeholder="Client name"/>
+      <label className="fieldLabel">Email</label><input className="taskInput" value={email} onChange={e=>setEmail(e.target.value)} placeholder="client@example.com"/>
+      <label className="fieldLabel">Company</label><input className="taskInput" value={company} onChange={e=>setCompany(e.target.value)} placeholder="Optional"/>
+      <label className="fieldLabel">Related task</label><select value={taskTitle} onChange={e=>setTaskTitle(e.target.value)}>{tasks.length ? tasks.map(t=><option key={t.id}>{t.title}</option>) : <option>No task yet</option>}</select>
+      <button className="primary wideBtn" onClick={addClient} disabled={!name.trim()}><BriefcaseBusiness size={16}/> Add client</button>
+    </section>
+    <section className="panel">
+      <div className="panelHead"><div><h3>Client list</h3><p>{clients.length} local record{clients.length===1?"":"s"}</p></div><CheckCircle2 size={18}/></div>
+      {!clients.length ? <div className="empty">No clients yet. Add one from the form.</div> : <div className="queue">{clients.map(cl=><div className="featureCard" key={cl.id}><div className="featureIcon"><BriefcaseBusiness size={19}/></div><div><b>{cl.name}</b><span>{cl.company||"No company"} • {cl.email||"No email"} • {cl.taskTitle||"No task"}</span></div><select value={cl.status} onChange={e=>setClients(prev=>prev.map(x=>x.id===cl.id?{...x,status:e.target.value as Client["status"]}:x))}><option>Lead</option><option>Active</option><option>Completed</option></select></div>)}</div>}
+    </section>
+    <div className="notice"><ShieldCheck size={16}/><span>Client records are local demo state. Persistent clients and real messages require the secure backend.</span></div>
+  </div>;
 }
 
-function EarningsPanel() {
-  return <section className="panel">
-    <div className="panelHead"><div><h3>Earnings Ledger</h3><p>Track approved jobs and payments</p></div><DollarSign size={18}/></div>
-    <div className="stats">
-      <div className="stat"><div className="statIcon"><DollarSign size={18}/></div><span>Total</span><strong>Rs 0</strong><small>Demo ledger</small></div>
-      <div className="stat"><div className="statIcon"><CheckCircle2 size={18}/></div><span>Paid jobs</span><strong>0</strong><small>No backend records</small></div>
-    </div>
-  </section>;
+function EarningsPanel({ earnings, setEarnings, tasks, clients }: { earnings:EarningsEntry[]; setEarnings:React.Dispatch<React.SetStateAction<EarningsEntry[]>>; tasks:Task[]; clients:Client[] }) {
+  const [taskTitle,setTaskTitle]=useState(tasks[0]?.title ?? "");
+  const [clientName,setClientName]=useState(clients[0]?.name ?? "");
+  const [amount,setAmount]=useState("");
+
+  const addEntry=()=>{
+    if(!taskTitle || !clientName || !amount.trim()) return;
+    setEarnings(prev=>[...prev,{id:Date.now(),taskTitle,clientName,amount:amount.trim(),status:"Pending",note:"Awaiting real payment confirmation"}]);
+    setAmount("");
+  };
+
+  return <div>
+    <section className="panel">
+      <div className="panelHead"><div><h3>Earnings Ledger</h3><p>Track approved jobs without inventing payment data</p></div><DollarSign size={18}/></div>
+      <div className="stats">
+        <div className="stat"><div className="statIcon"><DollarSign size={18}/></div><span>Total recorded</span><strong>{earnings.length}</strong><small>Ledger entries</small></div>
+        <div className="stat"><div className="statIcon"><CheckCircle2 size={18}/></div><span>Paid</span><strong>{earnings.filter(e=>e.status==="Paid").length}</strong><small>Only after confirmation</small></div>
+      </div>
+      <div className="notice"><ShieldCheck size={16}/><span>Amounts here are user-provided records only. No fake payment or bank balance is generated.</span></div>
+    </section>
+    <section className="panel sectionGap">
+      <div className="panelHead"><div><h3>Add earning record</h3><p>Record a real payment you have actually received</p></div><FileText size={18}/></div>
+      <label className="fieldLabel">Task</label><select value={taskTitle} onChange={e=>setTaskTitle(e.target.value)}>{tasks.length?tasks.map(t=><option key={t.id}>{t.title}</option>):<option>No task yet</option>}</select>
+      <label className="fieldLabel">Client</label><select value={clientName} onChange={e=>setClientName(e.target.value)}>{clients.length?clients.map(cl=><option key={cl.id}>{cl.name}</option>):<option>No client yet</option>}</select>
+      <label className="fieldLabel">Amount</label><input className="taskInput" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="e.g. Rs 5,000"/>
+      <button className="primary wideBtn" onClick={addEntry} disabled={!tasks.length||!clients.length||!amount.trim()}><DollarSign size={16}/> Add pending record</button>
+    </section>
+    <section className="panel sectionGap">
+      <div className="panelHead"><div><h3>Ledger</h3><p>Payment status remains under your control</p></div><Clock3 size={18}/></div>
+      {!earnings.length?<div className="empty">No earnings recorded.</div>:<div className="oppList">{earnings.map(e=><div className="opp" key={e.id}><div className="oppIcon"><DollarSign size={18}/></div><div className="oppMain"><b>{e.taskTitle}</b><span>{e.clientName} • {e.note}</span></div><div className="value">{e.amount}</div><select value={e.status} onChange={ev=>setEarnings(prev=>prev.map(x=>x.id===e.id?{...x,status:ev.target.value as EarningsEntry["status"],note:ev.target.value==="Paid"?"Marked paid by user":"Awaiting real payment confirmation"}:x))}><option>Pending</option><option>Paid</option></select></div>)}</div>}
+    </section>
+  </div>;
 }
