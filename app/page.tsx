@@ -40,7 +40,7 @@ const seed: Opportunity[] = [
 ];
 
 export default function Home() {
-  const [tab, setTab] = useState<"overview" | "opportunities" | "tasks" | "email" | "clients" | "earnings">("overview");
+  const [tab, setTab] = useState<"overview" | "revbot" | "opportunities" | "tasks" | "email" | "clients" | "earnings">("overview");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [items, setItems] = useState(seed);
@@ -48,6 +48,8 @@ export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [earnings, setEarnings] = useState<EarningsEntry[]>([]);
+  const [revbotRunning, setRevbotRunning] = useState(false);
+  const [revbotGoal, setRevbotGoal] = useState("Find and prepare suitable work");
 
   const filtered = useMemo(() => items.filter(o =>
     (category === "All" || o.category === category) &&
@@ -81,6 +83,7 @@ export default function Home() {
         <div className="brand"><div className="brandIcon"><Bot size={22}/></div><div><b>EARNING</b><span>ROBOT</span></div></div>
         <div className="navLabel">CONTROL CENTER</div>
         <button className={"nav " + (tab === "overview" ? "active" : "")} onClick={() => setTab("overview")}><Activity size={18}/><span>Overview</span></button>
+        <button className={"nav " + (tab === "revbot" ? "active" : "")} onClick={() => setTab("revbot" as any)}><Bot size={18}/><span>RevBot</span><em>{revbotRunning ? "ON" : "OFF"}</em></button>
         <button className={"nav " + (tab === "opportunities" ? "active" : "")} onClick={() => setTab("opportunities")}><Radar size={18}/><span>Opportunities</span><em>{items.length}</em></button>
         <button className={"nav " + (tab === "tasks" ? "active" : "")} onClick={() => setTab("tasks")}><BriefcaseBusiness size={18}/><span>Tasks</span><em>{tasks.length}</em></button>
         <button className={"nav " + (tab === "email" ? "active" : "")} onClick={() => setTab("email")}><Mail size={18}/><span>Email Agent</span></button>
@@ -91,11 +94,11 @@ export default function Home() {
 
       <section className="content">
         <header className="topbar">
-          <div><div className="eyebrow">PHASE 4 • TASK + PROPOSAL WORKSPACE</div><h1>{tab === "overview" ? "Robot Control Center" : tab === "opportunities" ? "Opportunity Radar" : tab === "tasks" ? "Task Workspace" : tab === "clients" ? "Client Workspace" : tab === "earnings" ? "Earnings Ledger" : "Email Agent"}</h1></div>
+          <div><div className="eyebrow">PHASE 4 • TASK + PROPOSAL WORKSPACE</div><h1>{tab === "overview" ? "Robot Control Center" : tab === "revbot" ? "RevBot Command Center" : tab === "opportunities" ? "Opportunity Radar" : tab === "tasks" ? "Task Workspace" : tab === "clients" ? "Client Workspace" : tab === "earnings" ? "Earnings Ledger" : "Email Agent"}</h1></div>
           <div className="topRight"><div className="status"><span className="pulse"></span>AUTOMATION READY</div><div className="avatar">ER</div></div>
         </header>
 
-        {tab === "overview" && <Overview setTab={setTab} emailConnected={emailConnected} opportunities={items.length}/>}
+        {tab === "overview" && <Overview setTab={setTab} emailConnected={emailConnected} opportunities={items.length}/>}\n        {tab === "revbot" && <RevBotPanel running={revbotRunning} setRunning={setRevbotRunning} goal={revbotGoal} setGoal={setRevbotGoal} tasks={tasks} clients={clients} earnings={earnings}/>}
         {tab === "opportunities" && <OpportunityPanel filtered={filtered} query={query} setQuery={setQuery} category={category} setCategory={setCategory} save={save} createTask={createTask}/>}
         {tab === "tasks" && <TaskPanel tasks={tasks} setTasks={setTasks} />}
         {tab === "clients" && <ClientPanel clients={clients} setClients={setClients} tasks={tasks} />}
@@ -106,7 +109,7 @@ export default function Home() {
   );
 }
 
-function Overview({ setTab, emailConnected, opportunities }: { setTab: (t: "overview" | "opportunities" | "tasks" | "email" | "clients" | "earnings") => void; emailConnected: boolean; opportunities: number }) {
+function Overview({ setTab, emailConnected, opportunities }: { setTab: (t: "overview" | "revbot" | "opportunities" | "tasks" | "email" | "clients" | "earnings") => void; emailConnected: boolean; opportunities: number }) {
   return <div>
     <div className="hero">
       <div><div className="heroTitle"><Sparkles size={18}/> Phase 2 automation layer</div><h2>Discover work before you act.</h2><p>The opportunity workspace can filter, score and save work. Email connection is prepared for the next backend step.</p></div>
@@ -242,6 +245,37 @@ function TaskPanel({ tasks, setTasks }: { tasks: Task[]; setTasks: React.Dispatc
         <button className="inspect" disabled={!selected.proposal} onClick={approve}><CheckCircle2 size={16}/> Approve</button>
       </div>
     </section>}
+  </div>;
+}
+
+function RevBotPanel({ running, setRunning, goal, setGoal, tasks, clients, earnings }: { running:boolean; setRunning:(v:boolean)=>void; goal:string; setGoal:(v:string)=>void; tasks:Task[]; clients:Client[]; earnings:EarningsEntry[] }) {
+  const approved=tasks.filter(t=>t.status==="Approved").length;
+  const paid=earnings.filter(e=>e.status==="Paid").length;
+  return <div>
+    <div className="stats">
+      <div className="stat"><div className="statIcon"><Bot size={18}/></div><span>RevBot</span><strong>{running?"ON":"OFF"}</strong><small>{running?"Automation armed":"Manual mode"}</small></div>
+      <div className="stat"><div className="statIcon"><Radar size={18}/></div><span>Opportunities</span><strong>{tasks.length}</strong><small>Tasks created</small></div>
+      <div className="stat"><div className="statIcon"><CheckCircle2 size={18}/></div><span>Approved</span><strong>{approved}</strong><small>Human approved</small></div>
+      <div className="stat"><div className="statIcon"><DollarSign size={18}/></div><span>Paid records</span><strong>{paid}</strong><small>Confirmed manually</small></div>
+    </div>
+    <div className="grid">
+      <section className="panel">
+        <div className="panelHead"><div><h3>RevBot Command Center</h3><p>Control what the robot prepares; actions remain approval-aware.</p></div><Bot size={18}/></div>
+        <div className="featureCard"><div className="featureIcon"><Zap size={19}/></div><div><b>Automation status</b><span>{running?"RevBot is running in local demo mode.":"RevBot is paused."}</span></div><button className="primary" onClick={()=>setRunning(!running)}>{running?"Pause RevBot":"Start RevBot"}</button></div>
+        <label className="fieldLabel">Primary goal</label>
+        <textarea className="taskInput taskArea" value={goal} onChange={e=>setGoal(e.target.value)} />
+        <div className="notice"><ShieldCheck size={16}/><span>RevBot does not submit applications, send messages, or create fake earnings automatically. Those actions require a permitted backend integration and explicit approval.</span></div>
+      </section>
+      <section className="panel">
+        <div className="panelHead"><div><h3>Automation Pipeline</h3><p>Current workspace signals</p></div><Activity size={18}/></div>
+        <div className="queue">
+          <div className="featureCard"><div className="featureIcon"><Radar size={19}/></div><div><b>Discover</b><span>Review opportunities in the radar.</span></div><span className="tag">READY</span></div>
+          <div className="featureCard"><div className="featureIcon"><FileText size={19}/></div><div><b>Prepare</b><span>{tasks.length} task{tasks.length===1?"":"s"} available.</span></div><span className="tag">{tasks.length?"READY":"WAIT"}</span></div>
+          <div className="featureCard"><div className="featureIcon"><CheckCircle2 size={19}/></div><div><b>Approval</b><span>{approved} approved proposal{approved===1?"":"s"}.</span></div><span className="tag">HUMAN</span></div>
+          <div className="featureCard"><div className="featureIcon"><BriefcaseBusiness size={19}/></div><div><b>Clients</b><span>{clients.length} client record{clients.length===1?"":"s"}.</span></div><span className="tag">{clients.length?"READY":"WAIT"}</span></div>
+        </div>
+      </section>
+    </div>
   </div>;
 }
 
