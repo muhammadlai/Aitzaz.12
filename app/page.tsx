@@ -24,7 +24,7 @@ const seed: Opportunity[] = [
 ];
 
 export default function Home() {
-  const [tab, setTab] = useState<"overview" | "opportunities" | "email">("overview");
+  const [tab, setTab] = useState<"overview" | "opportunities" | "tasks" | "email" | "clients" | "earnings">("overview");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [items, setItems] = useState(seed);
@@ -44,27 +44,31 @@ export default function Home() {
         <div className="navLabel">CONTROL CENTER</div>
         <button className={"nav " + (tab === "overview" ? "active" : "")} onClick={() => setTab("overview")}><Activity size={18}/><span>Overview</span></button>
         <button className={"nav " + (tab === "opportunities" ? "active" : "")} onClick={() => setTab("opportunities")}><Radar size={18}/><span>Opportunities</span><em>{items.length}</em></button>
-        <button className="nav"><BriefcaseBusiness size={18}/><span>Tasks</span></button>
+        <button className={"nav " + (tab === "tasks" ? "active" : "")} onClick={() => setTab("tasks")}><BriefcaseBusiness size={18}/><span>Tasks</span><em>1</em></button>
         <button className={"nav " + (tab === "email" ? "active" : "")} onClick={() => setTab("email")}><Mail size={18}/><span>Email Agent</span></button>
-        <button className="nav"><DollarSign size={18}/><span>Earnings</span></button>
+        <button className={"nav " + (tab === "clients" ? "active" : "")} onClick={() => setTab("clients")}><BriefcaseBusiness size={18}/><span>Clients</span></button>
+        <button className={"nav " + (tab === "earnings" ? "active" : "")} onClick={() => setTab("earnings")}><DollarSign size={18}/><span>Earnings</span></button>
         <div className="navBottom"><div className="system"><span className="systemDot"/>System ready</div></div>
       </aside>
 
       <section className="content">
         <header className="topbar">
-          <div><div className="eyebrow">PHASE 2 • OPPORTUNITY + EMAIL LAYER</div><h1>{tab === "overview" ? "Robot Control Center" : tab === "opportunities" ? "Opportunity Radar" : "Email Agent"}</h1></div>
+          <div><div className="eyebrow">PHASE 3 • TASK + PROPOSAL WORKSPACE</div><h1>{tab === "overview" ? "Robot Control Center" : tab === "opportunities" ? "Opportunity Radar" : tab === "tasks" ? "Task Workspace" : tab === "clients" ? "Client Workspace" : tab === "earnings" ? "Earnings Ledger" : "Email Agent"}</h1></div>
           <div className="topRight"><div className="status"><span className="pulse"></span>AUTOMATION READY</div><div className="avatar">ER</div></div>
         </header>
 
         {tab === "overview" && <Overview setTab={setTab} emailConnected={emailConnected} opportunities={items.length}/>}
         {tab === "opportunities" && <OpportunityPanel filtered={filtered} query={query} setQuery={setQuery} category={category} setCategory={setCategory} save={save}/>}
-        {tab === "email" && <EmailPanel connected={emailConnected} onConnect={() => setEmailConnected(true)}/>}
+        {tab === "tasks" && <TaskPanel />}
+        {tab === "clients" && <ClientPanel />}
+        {tab === "earnings" && <EarningsPanel />}
+        {tab === "email" && <EmailPanel connected={emailConnected} onConnect={() => setEmailConnected(true}/>}
       </section>
     </main>
   );
 }
 
-function Overview({ setTab, emailConnected, opportunities }: { setTab: (t: "overview" | "opportunities" | "email") => void; emailConnected: boolean; opportunities: number }) {
+function Overview({ setTab, emailConnected, opportunities }: { setTab: (t: "overview" | "opportunities" | "tasks" | "email" | "clients" | "earnings") => void; emailConnected: boolean; opportunities: number }) {
   return <div>
     <div className="hero">
       <div><div className="heroTitle"><Sparkles size={18}/> Phase 2 automation layer</div><h2>Discover work before you act.</h2><p>The opportunity workspace can filter, score and save work. Email connection is prepared for the next backend step.</p></div>
