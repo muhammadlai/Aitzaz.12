@@ -179,7 +179,7 @@ function OpportunityPanel({ filtered, query, setQuery, category, setCategory, sa
     <div className="panel toolbar">
       <div className="searchBox"><Search size={16}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search opportunities..." /></div>
       <select value={category} onChange={e => setCategory(e.target.value)}><option>All</option><option>Data</option><option>Social</option><option>Design</option></select>
-      <span className="demoBadge">DEMO DATA</span>
+      <span className="demoBadge">LOCAL SEED • BACKEND READY</span>
     </div>
     <section className="panel">
       <div className="panelHead"><div><h3>Opportunity Inbox</h3><p>{filtered.length} matching opportunities • no applications are sent automatically</p></div><Radar size={18}/></div>
@@ -196,12 +196,12 @@ function OpportunityPanel({ filtered, query, setQuery, category, setCategory, sa
   </div>;
 }
 
-function EmailPanel({ connected, onConnect }: { connected: boolean; onConnect: () => void }) {
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";\n\nfunction EmailPanel({ connected, onConnect }: { connected: boolean; onConnect: () => void }) {
   return <div className="grid emailGrid">
     <section className="panel">
       <div className="panelHead"><div><h3>Email Agent</h3><p>Inbox monitoring preparation</p></div><Mail size={18}/></div>
-      <div className="emailCard"><div className="mailIcon"><Inbox size={22}/></div><div><b>{connected ? "Test connection enabled" : "Connect your mailbox"}</b><span>{connected ? "This Phase 2 button only changes local demo state." : "Secure OAuth will be implemented when the backend is connected."}</span></div></div>
-      <button className="primary wideBtn" onClick={onConnect}>{connected ? "Connected (demo)" : "Connect email (demo)"}</button>
+      <div className="emailCard"><div className="mailIcon"><Inbox size={22}/></div><div><b>{connected ? "Test connection enabled" : "Connect your mailbox"}</b><span>{connected ? "Gmail OAuth is handled by the secure backend." : "Secure Gmail OAuth is handled server-side; secrets stay off GitHub Pages."}</span></div></div>
+      <button className="primary wideBtn" onClick={async () => { if (!API_BASE) { onConnect(); return; } const r = await fetch(`${API_BASE}/api/gmail/connect`); const d = await r.json(); if (d.url) window.location.href = d.url; else alert(d.error || "Gmail backend is not configured."); }}>{connected ? "Connected (demo)" : "Connect Gmail"}</button>
     </section>
     <section className="panel">
       <div className="panelHead"><div><h3>What happens next</h3><p>Backend-required features</p></div><Zap size={18}/></div>
