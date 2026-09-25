@@ -62,7 +62,7 @@ export default function Home() {
         {tab === "tasks" && <TaskPanel />}
         {tab === "clients" && <ClientPanel />}
         {tab === "earnings" && <EarningsPanel />}
-        {tab === "email" && <EmailPanel connected={emailConnected} onConnect={() => setEmailConnected(true)} />
+        {tab === "email" && <EmailPanel connected={emailConnected} onConnect={() => setEmailConnected(true)} />}
       </section>
     </main>
   );
@@ -136,4 +136,33 @@ function EmailPanel({ connected, onConnect }: { connected: boolean; onConnect: (
       <div className="queue"><div><Mail/><span>Read approved inbox messages</span><b>READY</b></div><div><Sparkles/><span>Extract client requirements</span><b>NEXT</b></div><div><BriefcaseBusiness/><span>Create a task from a request</span><b>NEXT</b></div><div><CheckCircle2/><span>Draft reply for approval</span><b>NEXT</b></div></div>
     </section>
   </div>;
+}
+
+
+function TaskPanel() {
+  return <section className="panel">
+    <div className="panelHead"><div><h3>Task Workspace</h3><p>Prepared task queue for approved work</p></div><BriefcaseBusiness size={18}/></div>
+    <div className="queue">
+      <div><BriefcaseBusiness/><span>Review incoming task</span><b>READY</b></div>
+      <div><Sparkles/><span>Analyze requirements</span><b>NEXT</b></div>
+      <div><CheckCircle2/><span>Prepare work draft</span><b>NEXT</b></div>
+    </div>
+  </section>;
+}
+
+function ClientPanel() {
+  return <section className="panel">
+    <div className="panelHead"><div><h3>Client Workspace</h3><p>Client records will be connected to the backend</p></div><BriefcaseBusiness size={18}/></div>
+    <div className="empty">No client records yet. Backend connection is required for persistent clients.</div>
+  </section>;
+}
+
+function EarningsPanel() {
+  return <section className="panel">
+    <div className="panelHead"><div><h3>Earnings Ledger</h3><p>Track approved jobs and payments</p></div><DollarSign size={18}/></div>
+    <div className="stats">
+      <div className="stat"><div className="statIcon"><DollarSign size={18}/></div><span>Total</span><strong>Rs 0</strong><small>Demo ledger</small></div>
+      <div className="stat"><div className="statIcon"><CheckCircle2 size={18}/></div><span>Paid jobs</span><strong>0</strong><small>No backend records</small></div>
+    </div>
+  </section>;
 }
