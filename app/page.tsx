@@ -3,8 +3,21 @@
 import { useMemo, useState } from "react";
 import {
   Activity, Bot, BriefcaseBusiness, CheckCircle2, Clock3, DollarSign,
-  Inbox, Mail, Radar, Search, ShieldCheck, Sparkles, Star, Zap
+  Inbox, Mail, Radar, Search, ShieldCheck, Sparkles, Star, Zap, FileText, CalendarDays
 } from "lucide-react";
+
+type Task = {
+  id: number;
+  title: string;
+  source: string;
+  category: string;
+  budget: string;
+  deadline: string;
+  requirements: string;
+  skills: string;
+  proposal: string;
+  status: "Draft" | "Approved";
+};
 
 type Opportunity = {
   id: number;
@@ -29,6 +42,7 @@ export default function Home() {
   const [category, setCategory] = useState("All");
   const [items, setItems] = useState(seed);
   const [emailConnected, setEmailConnected] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const filtered = useMemo(() => items.filter(o =>
     (category === "All" || o.category === category) &&
@@ -37,6 +51,25 @@ export default function Home() {
 
   const save = (id: number) => setItems(prev => prev.map(o => o.id === id ? { ...o, status: "Saved" } : o));
 
+  const createTask = (opportunity: Opportunity) => {
+    setTasks(prev => {
+      if (prev.some(t => t.title === opportunity.title)) return prev;
+      return [...prev, {
+        id: Date.now(),
+        title: opportunity.title,
+        source: opportunity.source,
+        category: opportunity.category,
+        budget: opportunity.value,
+        deadline: "Not set",
+        requirements: "Add the client's exact requirements here.",
+        skills: opportunity.category === "Design" ? "Design, communication" : "Research, communication, accuracy",
+        proposal: "",
+        status: "Draft"
+      }];
+    });
+    setTab("tasks");
+  };
+
   return (
     <main className="shell">
       <aside className="sidebar">
@@ -44,7 +77,7 @@ export default function Home() {
         <div className="navLabel">CONTROL CENTER</div>
         <button className={"nav " + (tab === "overview" ? "active" : "")} onClick={() => setTab("overview")}><Activity size={18}/><span>Overview</span></button>
         <button className={"nav " + (tab === "opportunities" ? "active" : "")} onClick={() => setTab("opportunities")}><Radar size={18}/><span>Opportunities</span><em>{items.length}</em></button>
-        <button className={"nav " + (tab === "tasks" ? "active" : "")} onClick={() => setTab("tasks")}><BriefcaseBusiness size={18}/><span>Tasks</span><em>1</em></button>
+        <button className={"nav " + (tab === "tasks" ? "active" : "")} onClick={() => setTab("tasks")}><BriefcaseBusiness size={18}/><span>Tasks</span><em>{tasks.length}</em></button>
         <button className={"nav " + (tab === "email" ? "active" : "")} onClick={() => setTab("email")}><Mail size={18}/><span>Email Agent</span></button>
         <button className={"nav " + (tab === "clients" ? "active" : "")} onClick={() => setTab("clients")}><BriefcaseBusiness size={18}/><span>Clients</span></button>
         <button className={"nav " + (tab === "earnings" ? "active" : "")} onClick={() => setTab("earnings")}><DollarSign size={18}/><span>Earnings</span></button>
@@ -53,13 +86,13 @@ export default function Home() {
 
       <section className="content">
         <header className="topbar">
-          <div><div className="eyebrow">PHASE 3 • TASK + PROPOSAL WORKSPACE</div><h1>{tab === "overview" ? "Robot Control Center" : tab === "opportunities" ? "Opportunity Radar" : tab === "tasks" ? "Task Workspace" : tab === "clients" ? "Client Workspace" : tab === "earnings" ? "Earnings Ledger" : "Email Agent"}</h1></div>
+          <div><div className="eyebrow">PHASE 4 • TASK + PROPOSAL WORKSPACE</div><h1>{tab === "overview" ? "Robot Control Center" : tab === "opportunities" ? "Opportunity Radar" : tab === "tasks" ? "Task Workspace" : tab === "clients" ? "Client Workspace" : tab === "earnings" ? "Earnings Ledger" : "Email Agent"}</h1></div>
           <div className="topRight"><div className="status"><span className="pulse"></span>AUTOMATION READY</div><div className="avatar">ER</div></div>
         </header>
 
         {tab === "overview" && <Overview setTab={setTab} emailConnected={emailConnected} opportunities={items.length}/>}
-        {tab === "opportunities" && <OpportunityPanel filtered={filtered} query={query} setQuery={setQuery} category={category} setCategory={setCategory} save={save}/>}
-        {tab === "tasks" && <TaskPanel />}
+        {tab === "opportunities" && <OpportunityPanel filtered={filtered} query={query} setQuery={setQuery} category={category} setCategory={setCategory} save={save} createTask={createTask}/>}
+        {tab === "tasks" && <TaskPanel tasks={tasks} setTasks={setTasks} />}
         {tab === "clients" && <ClientPanel />}
         {tab === "earnings" && <EarningsPanel />}
         {tab === "email" && <EmailPanel connected={emailConnected} onConnect={() => setEmailConnected(true)} />}
@@ -102,7 +135,7 @@ function Overview({ setTab, emailConnected, opportunities }: { setTab: (t: "over
   </div>;
 }
 
-function OpportunityPanel({ filtered, query, setQuery, category, setCategory, save }: { filtered: Opportunity[]; query: string; setQuery: (v: string) => void; category: string; setCategory: (v: string) => void; save: (id: number) => void }) {
+function OpportunityPanel({ filtered, query, setQuery, category, setCategory, save, createTask }: { filtered: Opportunity[]; query: string; setQuery: (v: string) => void; category: string; setCategory: (v: string) => void; save: (id: number) => void; createTask: (o: Opportunity) => void }) {
   return <div>
     <div className="panel toolbar">
       <div className="searchBox"><Search size={16}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search opportunities..." /></div>
@@ -116,7 +149,7 @@ function OpportunityPanel({ filtered, query, setQuery, category, setCategory, sa
         <div className="oppMain"><b>{o.title}</b><span>{o.source} • {o.category}</span></div>
         <div className="match">{o.match}%<small>match</small></div>
         <div className="value">{o.value}</div>
-        <button className={"inspect " + (o.status === "Saved" ? "saved" : "")} onClick={() => save(o.id)}>{o.status === "Saved" ? "Saved" : "Save"}</button>
+        <button className={"inspect " + (o.status === "Saved" ? "saved" : "")} onClick={() => save(o.id)}>{o.status === "Saved" ? "Saved" : "Save"}</button><button className="inspect" onClick={() => createTask(o)}>Create task</button>
       </div>)}</div>
       {!filtered.length && <div className="empty">No matching opportunities.</div>}
     </section>
@@ -139,15 +172,72 @@ function EmailPanel({ connected, onConnect }: { connected: boolean; onConnect: (
 }
 
 
-function TaskPanel() {
-  return <section className="panel">
-    <div className="panelHead"><div><h3>Task Workspace</h3><p>Prepared task queue for approved work</p></div><BriefcaseBusiness size={18}/></div>
-    <div className="queue">
-      <div><BriefcaseBusiness/><span>Review incoming task</span><b>READY</b></div>
-      <div><Sparkles/><span>Analyze requirements</span><b>NEXT</b></div>
-      <div><CheckCircle2/><span>Prepare work draft</span><b>NEXT</b></div>
-    </div>
-  </section>;
+function TaskPanel({ tasks, setTasks }: { tasks: Task[]; setTasks: React.Dispatch<React.SetStateAction<Task[]>> }) {
+  const [selectedId, setSelectedId] = useState<number | null>(tasks[0]?.id ?? null);
+  const selected = tasks.find(t => t.id === selectedId) ?? tasks[0];
+
+  const update = (patch: Partial<Task>) => {
+    if (!selected) return;
+    setTasks(prev => prev.map(t => t.id === selected.id ? { ...t, ...patch } : t));
+  };
+
+  const generateDraft = () => {
+    if (!selected) return;
+    update({
+      proposal: `Hello, I can help with ${selected.title.toLowerCase()}. Based on the requirements, I can deliver accurate, organized work within the agreed scope and deadline. I will communicate clearly, confirm any missing details, and provide the final work for your review.`,
+      status: "Draft"
+    });
+  };
+
+  const approve = () => {
+    if (!selected?.proposal) return;
+    update({ status: "Approved" });
+  };
+
+  if (!tasks.length) {
+    return <section className="panel">
+      <div className="panelHead"><div><h3>Task Workspace</h3><p>Create a task from Opportunity Radar to begin.</p></div><BriefcaseBusiness size={18}/></div>
+      <div className="empty">No tasks yet. Open Opportunities → Create task.</div>
+    </section>;
+  }
+
+  return <div className="grid">
+    <section className="panel">
+      <div className="panelHead"><div><h3>Task Workspace</h3><p>{tasks.length} task{tasks.length === 1 ? "" : "s"} • approval required</p></div><BriefcaseBusiness size={18}/></div>
+      <div className="queue">
+        {tasks.map(t => <button key={t.id} className="featureCard" onClick={() => setSelectedId(t.id)}>
+          <div className="featureIcon"><BriefcaseBusiness size={19}/></div>
+          <div><b>{t.title}</b><span>{t.category} • {t.budget}</span></div>
+          <span className="tag">{t.status.toUpperCase()}</span>
+        </button>)}
+      </div>
+    </section>
+
+    {selected && <section className="panel">
+      <div className="panelHead"><div><h3>Task Details</h3><p>Requirement, budget and deadline</p></div><FileText size={18}/></div>
+      <div className="featureCard"><div className="featureIcon"><BriefcaseBusiness size={19}/></div><div><b>{selected.title}</b><span>{selected.source} • {selected.category}</span></div></div>
+      <label className="fieldLabel">Budget</label>
+      <input className="taskInput" value={selected.budget} onChange={e => update({ budget: e.target.value })} />
+      <label className="fieldLabel">Deadline</label>
+      <div className="searchBox"><CalendarDays size={16}/><input className="taskInputPlain" value={selected.deadline} onChange={e => update({ deadline: e.target.value })} placeholder="e.g. 30 Sep 2026" /></div>
+      <label className="fieldLabel">Requirements</label>
+      <textarea className="taskInput taskArea" value={selected.requirements} onChange={e => update({ requirements: e.target.value })} />
+      <label className="fieldLabel">Required skills</label>
+      <input className="taskInput" value={selected.skills} onChange={e => update({ skills: e.target.value })} />
+    </section>}
+
+    {selected && <section className="panel sectionGap">
+      <div className="panelHead"><div><h3>Proposal Studio</h3><p>Generate → review → approve</p></div><Sparkles size={18}/></div>
+      <div className="notice"><ShieldCheck size={16}/><span>No proposal is sent automatically. Approval is required.</span></div>
+      <textarea className="taskInput taskArea proposalBox" value={selected.proposal} onChange={e => update({ proposal: e.target.value, status: "Draft" })} placeholder="Click Generate draft to prepare a proposal..." />
+      <div className="featureCard">
+        <div className="featureIcon"><FileText size={19}/></div>
+        <div><b>Status: {selected.status}</b><span>{selected.status === "Approved" ? "Approved and ready for the next backend send step." : "Draft requires your review."}</span></div>
+        <button className="primary" onClick={generateDraft}><Sparkles size={16}/> Generate draft</button>
+        <button className="inspect" disabled={!selected.proposal} onClick={approve}><CheckCircle2 size={16}/> Approve</button>
+      </div>
+    </section>}
+  </div>;
 }
 
 function ClientPanel() {
