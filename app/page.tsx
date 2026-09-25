@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Activity, Bot, BriefcaseBusiness, CheckCircle2, Clock3, DollarSign,
   Inbox, Mail, Radar, Search, ShieldCheck, Sparkles, Star, Zap, FileText, CalendarDays
@@ -50,6 +50,14 @@ export default function Home() {
   const [earnings, setEarnings] = useState<EarningsEntry[]>([]);
   const [revbotRunning, setRevbotRunning] = useState(false);
   const [revbotGoal, setRevbotGoal] = useState("Find and prepare suitable work");
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const savedCount = items.filter(o => o.status === "Saved").length;
+  const approvedCount = tasks.filter(t => t.status === "Approved").length;
+  const paidCount = earnings.filter(e => e.status === "Paid").length;
 
   const filtered = useMemo(() => items.filter(o =>
     (category === "All" || o.category === category) &&
@@ -95,10 +103,10 @@ export default function Home() {
       <section className="content">
         <header className="topbar">
           <div><div className="eyebrow">PHASE 4 • TASK + PROPOSAL WORKSPACE</div><h1>{tab === "overview" ? "Robot Control Center" : tab === "revbot" ? "RevBot Command Center" : tab === "opportunities" ? "Opportunity Radar" : tab === "tasks" ? "Task Workspace" : tab === "clients" ? "Client Workspace" : tab === "earnings" ? "Earnings Ledger" : "Email Agent"}</h1></div>
-          <div className="topRight"><div className="status"><span className="pulse"></span>AUTOMATION READY</div><div className="avatar">ER</div></div>
+          <div className="topRight"><div className="status"><span className="pulse"></span>AUTOMATION READY <span className="topClock">{now.toLocaleTimeString()}</span></div><div className="avatar">ER</div></div>
         </header>
 
-        {tab === "overview" && <Overview setTab={setTab} emailConnected={emailConnected} opportunities={items.length}/>}\n        {tab === "revbot" && <RevBotPanel running={revbotRunning} setRunning={setRevbotRunning} goal={revbotGoal} setGoal={setRevbotGoal} tasks={tasks} clients={clients} earnings={earnings}/>}
+        {tab === "overview" && <Overview setTab={setTab} emailConnected={emailConnected} opportunities={items.length} saved={savedCount} tasks={tasks.length} approved={approvedCount} clients={clients.length} paid={paidCount} revbotRunning={revbotRunning}/>}\n        {tab === "revbot" && <RevBotPanel running={revbotRunning} setRunning={setRevbotRunning} goal={revbotGoal} setGoal={setRevbotGoal} tasks={tasks} clients={clients} earnings={earnings}/>}
         {tab === "opportunities" && <OpportunityPanel filtered={filtered} query={query} setQuery={setQuery} category={category} setCategory={setCategory} save={save} createTask={createTask}/>}
         {tab === "tasks" && <TaskPanel tasks={tasks} setTasks={setTasks} />}
         {tab === "clients" && <ClientPanel clients={clients} setClients={setClients} tasks={tasks} />}
@@ -109,7 +117,7 @@ export default function Home() {
   );
 }
 
-function Overview({ setTab, emailConnected, opportunities }: { setTab: (t: "overview" | "revbot" | "opportunities" | "tasks" | "email" | "clients" | "earnings") => void; emailConnected: boolean; opportunities: number }) {
+function Overview({ setTab, emailConnected, opportunities, saved, tasks, approved, clients, paid, revbotRunning }: { setTab: (t: "overview" | "revbot" | "opportunities" | "tasks" | "email" | "clients" | "earnings") => void; emailConnected: boolean; opportunities: number; saved: number; tasks: number; approved: number; clients: number; paid: number; revbotRunning: boolean }) {
   return <div>
     <div className="hero">
       <div><div className="heroTitle"><Sparkles size={18}/> Phase 2 automation layer</div><h2>Discover work before you act.</h2><p>The opportunity workspace can filter, score and save work. Email connection is prepared for the next backend step.</p></div>
@@ -118,7 +126,7 @@ function Overview({ setTab, emailConnected, opportunities }: { setTab: (t: "over
 
     <div className="stats">
       <div className="stat"><div className="statIcon"><Radar size={18}/></div><span>Opportunities</span><strong>{opportunities}</strong><small>Demo records</small></div>
-      <div className="stat"><div className="statIcon"><Star size={18}/></div><span>Saved</span><strong>0</strong><small>Waiting for review</small></div>
+      <div className="stat"><div className="statIcon"><Star size={18}/></div><span>Saved</span><strong>{saved}</strong><small>Waiting for review</small></div>
       <div className="stat"><div className="statIcon"><Mail size={18}/></div><span>Email</span><strong>{emailConnected ? "Ready" : "Off"}</strong><small>{emailConnected ? "Local test connection" : "Not connected"}</small></div>
       <div className="stat"><div className="statIcon"><ShieldCheck size={18}/></div><span>Safety</span><strong>On</strong><small>Approval-aware</small></div>
     </div>
@@ -139,6 +147,29 @@ function Overview({ setTab, emailConnected, opportunities }: { setTab: (t: "over
     <section className="panel sectionGap">
       <div className="panelHead"><div><h3>Phase 2 workflow</h3><p>How the agent will process new work</p></div><Clock3 size={18}/></div>
       <div className="steps"><div><b>01</b><span>Discover</span><small>Approved sources</small></div><div><b>02</b><span>Score</span><small>Skill + budget match</small></div><div><b>03</b><span>Review</span><small>Human approval</small></div><div><b>04</b><span>Prepare</span><small>Proposal/task draft</small></div></div>
+    </section>
+    <section className="advancedGrid sectionGap">
+      <section className="panel">
+        <div className="panelHead"><div><h3>Advanced Operations</h3><p>Live workspace health and throughput</p></div><Activity size={18}/></div>
+        <div className="opsRows">
+          <div><span><span className="opsDot"></span>RevBot engine</span><b>{revbotRunning ? "RUNNING" : "PAUSED"}</b></div>
+          <div><span><span className="opsDot"></span>Opportunity queue</span><b>{opportunities} records</b></div>
+          <div><span><span className="opsDot"></span>Saved for review</span><b>{saved} records</b></div>
+          <div><span><span className="opsDot"></span>Task pipeline</span><b>{tasks} tasks</b></div>
+          <div><span><span className="opsDot"></span>Approval queue</span><b>{approved} approved</b></div>
+          <div><span><span className="opsDot"></span>Client workspace</span><b>{clients} clients</b></div>
+          <div><span><span className="opsDot"></span>Payment ledger</span><b>{paid} paid</b></div>
+        </div>
+      </section>
+      <section className="panel">
+        <div className="panelHead"><div><h3>Quick Actions</h3><p>Jump directly into the next step</p></div><Zap size={18}/></div>
+        <div className="quickGrid">
+          <button onClick={() => setTab("opportunities")}><Radar size={17}/><span>Scan work</span><small>{opportunities} available</small></button>
+          <button onClick={() => setTab("tasks")}><BriefcaseBusiness size={17}/><span>Open tasks</span><small>{tasks} in workspace</small></button>
+          <button onClick={() => setTab("revbot")}><Bot size={17}/><span>RevBot</span><small>{revbotRunning ? "Running" : "Paused"}</small></button>
+          <button onClick={() => setTab("earnings")}><DollarSign size={17}/><span>Ledger</span><small>{paid} paid records</small></button>
+        </div>
+      </section>
     </section>
   </div>;
 }
