@@ -62,7 +62,7 @@ export default function Home() {
         {tab === "tasks" && <TaskPanel />}
         {tab === "clients" && <ClientPanel />}
         {tab === "earnings" && <EarningsPanel />}
-        {tab === "email" && <EmailPanel connected={emailConnected} onConnect={() => setEmailConnected(true}/>}
+        {tab === "email" && <EmailPanel connected={emailConnected} onConnect={() => setEmailConnected(true)} />
       </section>
     </main>
   );
