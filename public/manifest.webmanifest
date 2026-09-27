@@ -1,0 +1,19 @@
+{
+  "name": "Earning Robot",
+  "short_name": "Earning Robot",
+  "description": "Earning Robot cyber command center",
+  "start_url": "/Aitzaz.12/",
+  "scope": "/Aitzaz.12/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#020604",
+  "theme_color": "#020604",
+  "icons": [
+    {
+      "src": "/Aitzaz.12/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
