@@ -14,12 +14,12 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:lin
 .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:16px}.card{border:1px solid #123d25;background:#061009;padding:18px;min-height:115px}.label{font-size:11px;color:#5f9b72;letter-spacing:2px}.num{font-size:30px;font-weight:900;margin-top:12px;color:#d9ffe5}.green{color:#36ff82}.cyan{color:#43f5ff}.main{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-top:16px}.panel{border:1px solid #123d25;background:#050b07;padding:18px}.pt{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #123d25;padding-bottom:12px;margin-bottom:12px}.pt b{letter-spacing:2px}.terminal{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}.line{padding:9px 0;border-bottom:1px dashed #11351f;color:#8db79a}.line strong{color:#38ff83}.line small{color:#517e60}.security{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sec{padding:14px;background:#07120b;border:1px solid #113a21}.sec b{display:block;color:#4cff8d;margin-top:5px}.modules{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}.module{border:1px solid #16472a;padding:18px;background:#07100a}.module h3{margin:0 0 8px;color:#70ffa3}.module p{margin:0;color:#72977e;font-size:13px}.footer{margin-top:16px;display:flex;flex-wrap:wrap;gap:9px}.tag{border:1px solid #184d2b;padding:9px 12px;color:#77a888;font-size:11px;letter-spacing:1px}
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.main{grid-template-columns:1fr}.modules{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.shell{padding:12px}.top{padding:14px;align-items:flex-start}.status{font-size:10px}.grid{grid-template-columns:1fr 1fr}.modules{grid-template-columns:1fr}.hero{padding:20px}.hero h1{font-size:40px}}
 </style>
-</head>
+<style>.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}.controls button{background:#07140b;color:#54ff91;border:1px solid #1c6b39;padding:12px 16px;font-weight:900;letter-spacing:1px;cursor:pointer}.controls button:hover{box-shadow:0 0 18px #31ff7840}.controls .off{color:#ff8a8a;border-color:#703030}.controls #clock{margin-left:auto;color:#5f9b72;font-family:ui-monospace,monospace}</style></head>
 <body>
 <div class="shell">
 <header class="top"><div class="brand">EARNING <span>//</span> ROBOT <span>// NEXUS</span></div><div class="status">● SYSTEM ONLINE</div></header>
 <section class="hero"><div class="label">REV-BOT OPERATIONS // MASTER COMMAND GRID</div><h1>WELCOME TO THE<br><em>DARK SYSTEM</em></h1><p class="sub">Cyber command center for opportunity discovery, task preparation, client workspace and earnings tracking. Safe mode: human approval remains required.</p><div class="bar"><i></i></div></section>
-<section class="grid">
+<div class="controls"><button id="scan">⚡ SCAN OPPORTUNITIES</button><button id="rev">⏻ REV-BOT <span id="revState">ON</span></button><span id="clock"></span></div><section class="grid">
 <div class="card"><div class="label">OPPORTUNITY RADAR</div><div class="num green">04</div></div>
 <div class="card"><div class="label">REV-BOT CORE</div><div class="num cyan">ONLINE</div></div>
 <div class="card"><div class="label">TASK QUEUE</div><div class="num">00</div></div>
@@ -49,4 +49,11 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:lin
 </section>
 <div class="footer"><span class="tag">HUMAN APPROVAL REQUIRED</span><span class="tag">NO AUTO-SEND</span><span class="tag">NO FAKE EARNINGS</span><span class="tag">PUBLIC UI • SAFE MODE</span></div>
 </div>
-</body></html>
+<script>
+const $=id=>document.getElementById(id);
+let running=localStorage.getItem("revbot")!=="off";
+function render(){ $("revState").textContent=running?"ON":"OFF"; $("rev").classList.toggle("off",!running); }
+$("scan").onclick=()=>{const l=document.querySelector(".terminal");const x=document.createElement("div");x.className="line";x.innerHTML="<strong>[SCAN]</strong> Radar scan completed // 4 opportunity records indexed";l.prepend(x)};
+$("rev").onclick=()=>{running=!running;localStorage.setItem("revbot",running?"on":"off");render();const l=document.querySelector(".terminal");const x=document.createElement("div");x.className="line";x.innerHTML="<strong>[REV-BOT]</strong> Core "+(running?"resumed":"paused")+" by user";l.prepend(x)};
+setInterval(()=>{$("clock").textContent=new Date().toLocaleTimeString()},1000);render();
+</script></body></html>
