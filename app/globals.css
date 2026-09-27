@@ -58,3 +58,14 @@
 .bootPanel small{display:block;color:#3d7750;font-size:8px;letter-spacing:1px;margin-top:18px}
 @keyframes bootLine{to{opacity:1;transform:translateX(0)}from{opacity:0;transform:translateX(-8px)}}
 @media(max-width:600px){.bootPanel{padding:26px}.bootPanel h1{font-size:34px}.bootLines div{font-size:9px}}
+
+.bootSignal{position:absolute;right:42px;top:42px;color:#35ff77;font-size:8px;letter-spacing:1px;text-shadow:0 0 8px #35ff77;animation:signalPulse 1.2s infinite}
+.bootScreen:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#48ff8a;box-shadow:0 0 18px #48ff8a;opacity:.55;animation:scan 3s linear infinite;z-index:2}
+.cyberShell .hero:after{content:"SYSTEM ONLINE // ENCRYPTED VISUAL CHANNEL";display:block;margin-top:18px;color:#3d8d55;font:8px "Courier New",monospace;letter-spacing:2px}
+.cyberShell .panelHead{position:relative}
+.cyberShell .panelHead:after{content:"● LIVE";font:8px "Courier New",monospace;letter-spacing:1px;color:#39ff78;text-shadow:0 0 8px #39ff78;position:absolute;right:0;top:2px}
+.cyberShell .stat{position:relative;overflow:hidden}
+.cyberShell .stat:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:#39ff78;box-shadow:0 0 8px #39ff78;opacity:.35;animation:metricScan 2s linear infinite}
+@keyframes scan{0%{transform:translateY(-10px)}100%{transform:translateY(100vh)}}
+@keyframes signalPulse{50%{opacity:.35}}
+@keyframes metricScan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
