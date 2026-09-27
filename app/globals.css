@@ -69,3 +69,28 @@
 @keyframes scan{0%{transform:translateY(-10px)}100%{transform:translateY(100vh)}}
 @keyframes signalPulse{50%{opacity:.35}}
 @keyframes metricScan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+
+.cyberCommand{border:1px solid #164d29;background:linear-gradient(145deg,#020905,#050e08);border-radius:13px;padding:16px;box-shadow:0 0 35px #00ff6608,inset 0 0 30px #00ff6605}
+.cyberCommandHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.terminalLabel{display:block;color:#3d9d59;font:8px "Courier New",monospace;letter-spacing:2px}
+.cyberCommandHeader h3{margin:4px 0 0;color:#baffc9;font:700 13px "Courier New",monospace;letter-spacing:1px}
+.onlineBadge{display:flex;align-items:center;gap:6px;color:#5dff8d;font:700 8px "Courier New",monospace;letter-spacing:1px;border:1px solid #1c6734;padding:6px 8px;border-radius:4px}
+.onlineBadge i{width:6px;height:6px;border-radius:50%;background:#39ff78;box-shadow:0 0 9px #39ff78;animation:signalPulse 1.2s infinite}
+.cyberMatrix{display:grid;grid-template-columns:1.55fr .85fr;gap:10px}
+.terminalPanel,.securityPanel{border:1px solid #123a21;background:#010603;border-radius:8px;overflow:hidden}
+.terminalTop{display:flex;justify-content:space-between;padding:9px 11px;border-bottom:1px solid #12351f;color:#4ab96b;font:8px "Courier New",monospace;letter-spacing:1px}
+.terminalTop span:last-child{color:#39ff78}
+.terminalLogs{padding:7px 10px}
+.terminalLine{display:grid;grid-template-columns:62px 75px 1fr;gap:8px;padding:7px 0;border-bottom:1px solid #092213;color:#719b7c;font:8px "Courier New",monospace}
+.terminalLine:last-child{border-bottom:0}
+.terminalTime{color:#356c46}
+.terminalLine b{color:#58e87e;font-weight:700}
+.terminalLine span:last-child{color:#9bc5a5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.securityRows{padding:7px 10px}
+.securityRows>div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #092213;font:8px "Courier New",monospace}
+.securityRows>div:last-child{border-bottom:0}
+.securityRows span{color:#5d8668}
+.securityRows b{color:#55ff86;font-weight:700;text-shadow:0 0 7px #39ff7840}
+@media(max-width:900px){.cyberMatrix{grid-template-columns:1fr}}
+@media(max-width:600px){.cyberCommand{padding:12px}.terminalLine{grid-template-columns:52px 62px 1fr;font-size:7px}.terminalTop{font-size:7px}}
