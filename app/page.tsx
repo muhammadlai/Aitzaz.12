@@ -54,9 +54,27 @@ export default function Home() {
   const [hydrated, setHydrated] = useState(false);
   const [booting, setBooting] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const [gmailSession, setGmailSession] = useState("");
+  const [gmailMessages, setGmailMessages] = useState<any[]>([]);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const session = params.get("session");
+    const gmail = params.get("gmail");
+    if (!session || gmail !== "connected" || !API_BASE) return;
+    setGmailSession(session);
+    setEmailConnected(true);
+    fetch(`${API_BASE}/api/gmail/messages?session=${encodeURIComponent(session)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok && Array.isArray(data.messages)) setGmailMessages(data.messages);
+      })
+      .catch(() => {});
+    window.history.replaceState({}, "", window.location.pathname + window.location.hash);
   }, []);
 
   useEffect(() => {
@@ -167,7 +185,7 @@ export default function Home() {
         {tab === "tasks" && <TaskPanel tasks={tasks} setTasks={setTasks} />}
         {tab === "clients" && <ClientPanel clients={clients} setClients={setClients} tasks={tasks} />}
         {tab === "earnings" && <EarningsPanel earnings={earnings} setEarnings={setEarnings} tasks={tasks} clients={clients} />}
-        {tab === "email" && <EmailPanel connected={emailConnected} onConnect={() => setEmailConnected(true)} />}
+        {tab === "email" && <EmailPanel connected={emailConnected} session={gmailSession} messages={gmailMessages} onConnect={() => setEmailConnected(true)} />}
       </section>
     </main>
   );
@@ -319,12 +337,14 @@ function OpportunityPanel({ filtered, query, setQuery, category, setCategory, sa
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-function EmailPanel({ connected, onConnect }: { connected: boolean; onConnect: () => void }) {
+function EmailPanel({ connected, session, messages, onConnect }: { connected: boolean; session: string; messages: any[]; onConnect: () => void }) {
   return <div className="grid emailGrid">
     <section className="panel">
       <div className="panelHead"><div><h3>Email Agent</h3><p>Inbox monitoring preparation</p></div><Mail size={18}/></div>
       <div className="emailCard"><div className="mailIcon"><Inbox size={22}/></div><div><b>{connected ? "Test connection enabled" : "Connect your mailbox"}</b><span>{connected ? "Gmail OAuth is handled by the secure backend." : "Secure Gmail OAuth is handled server-side; secrets stay off GitHub Pages."}</span></div></div>
-      <button className="primary wideBtn" onClick={async () => { if (!API_BASE) { onConnect(); return; } const r = await fetch(`${API_BASE}/api/gmail/connect`); const d = await r.json(); if (d.url) window.location.href = d.url; else alert(d.error || "Gmail backend is not configured."); }}>{connected ? "Connected (demo)" : "Connect Gmail"}</button>
+      <button className="primary wideBtn" onClick={async () => { if (!API_BASE) { onConnect(); return; } const r = await fetch(`${API_BASE}/api/gmail/connect`); const d = await r.json(); if (d.url) window.location.href = d.url; else alert(d.error || "Gmail backend is not configured."); }}>{connected ? "Gmail connected" : "Connect Gmail"}</button>
+      {connected && API_BASE && <div className="notice"><ShieldCheck size={16}/><span>{session ? `Secure Gmail session active • ${messages.length} message records loaded` : "Gmail is connected through the backend."}</span></div>}
+      {messages.length > 0 && <div className="queue">{messages.slice(0, 5).map((m: any) => <div className="featureCard" key={m.id}><div className="featureIcon"><Mail size={19}/></div><div><b>Gmail message</b><span>Message ID: {m.id}</span></div><span className="tag">LOADED</span></div>)}</div>}
     </section>
     <section className="panel">
       <div className="panelHead"><div><h3>What happens next</h3><p>Backend-required features</p></div><Zap size={18}/></div>
