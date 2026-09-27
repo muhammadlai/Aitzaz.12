@@ -94,3 +94,77 @@
 .securityRows b{color:#55ff86;font-weight:700;text-shadow:0 0 7px #39ff7840}
 @media(max-width:900px){.cyberMatrix{grid-template-columns:1fr}}
 @media(max-width:600px){.cyberCommand{padding:12px}.terminalLine{grid-template-columns:52px 62px 1fr;font-size:7px}.terminalTop{font-size:7px}}
+
+
+/* NEXUS HEAVY COMMAND CENTER */
+.commandStrip{
+  display:grid;
+  grid-template-columns:260px 1fr 120px;
+  gap:12px;
+  align-items:stretch;
+  margin-bottom:12px;
+  padding:12px;
+  border:1px solid #1d6a36;
+  border-radius:14px;
+  background:
+    linear-gradient(90deg,rgba(11,45,23,.82),rgba(2,12,7,.92)),
+    repeating-linear-gradient(90deg,transparent 0 18px,rgba(57,255,120,.025) 19px 20px);
+  box-shadow:0 0 35px rgba(0,255,102,.08),inset 0 0 30px rgba(0,255,102,.04);
+  position:relative;
+  overflow:hidden;
+}
+.commandStrip:before{
+  content:"";
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(57,255,120,.08),transparent);
+  transform:translateX(-100%);
+  animation:nexusSweep 4s linear infinite;
+}
+.commandIdentity{display:flex;align-items:center;gap:11px;padding:8px 12px;border-right:1px solid #164d29;position:relative;z-index:1}
+.commandIcon{width:40px;height:40px;display:grid;place-items:center;border:1px solid #2b9b50;border-radius:9px;background:#031109;color:#55ff88;box-shadow:0 0 20px rgba(57,255,120,.14)}
+.commandIdentity span,.commandIdentity b{display:block;font-family:"Courier New",monospace}
+.commandIdentity span{font-size:8px;letter-spacing:2px;color:#4fb86d}
+.commandIdentity b{font-size:11px;letter-spacing:1px;color:#caffd7;margin-top:4px}
+.commandTelemetry{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;position:relative;z-index:1}
+.commandTelemetry>div{border:1px solid #123a21;border-radius:8px;background:#020905;padding:8px 9px}
+.commandTelemetry span{display:flex;align-items:center;gap:5px;color:#568b67;font:7px "Courier New",monospace;letter-spacing:.8px}
+.commandTelemetry b{display:block;color:#aaffbf;font:700 10px "Courier New",monospace;margin-top:6px}
+.commandLive{border:1px solid #1b6735;border-radius:8px;display:grid;place-items:center;align-content:center;text-align:center;color:#54ff88;font:700 9px "Courier New",monospace;letter-spacing:1px;background:#020905;position:relative;z-index:1}
+.commandLive i{width:7px;height:7px;border-radius:50%;background:#39ff78;box-shadow:0 0 12px #39ff78;animation:signalPulse 1s infinite}
+.commandLive small{font-size:6px;color:#4d7d5b;letter-spacing:1px;margin-top:3px}
+.cyberShell .content{max-width:1540px}
+.cyberShell .topbar{padding:3px 2px 0}
+.cyberShell .topbar h1{font-family:"Courier New",monospace;text-transform:uppercase;letter-spacing:1px;text-shadow:0 0 18px rgba(57,255,120,.18)}
+.cyberShell .eyebrow{color:#3f9b5b;font-family:"Courier New",monospace}
+.cyberShell .avatar{border-color:#2b7d45;color:#72ff9b;background:#031008;box-shadow:0 0 16px rgba(57,255,120,.1)}
+.cyberShell .hero{position:relative;min-height:150px;overflow:hidden}
+.cyberShell .hero:before{content:"01 01 00 11 10 01 00 10";position:absolute;right:22px;bottom:14px;color:#164d29;font:9px "Courier New",monospace;letter-spacing:4px;opacity:.7}
+.cyberShell .hero h2{font-family:"Courier New",monospace;font-size:27px;text-transform:uppercase;letter-spacing:1px}
+.cyberShell .hero p{max-width:650px;line-height:1.7}
+.cyberShell .stats{gap:10px}
+.cyberShell .stat{min-height:112px;padding:17px}
+.cyberShell .stat strong{font-family:"Courier New",monospace;font-size:25px;text-shadow:0 0 12px rgba(57,255,120,.18)}
+.cyberShell .stat small{color:#4e825d}
+.cyberShell .panel{box-shadow:0 0 22px rgba(0,255,102,.035),inset 0 0 22px rgba(0,255,102,.025)}
+.cyberShell .panelHead h3{font-family:"Courier New",monospace;text-transform:uppercase;letter-spacing:.7px}
+.cyberShell .featureCard{min-height:62px}
+.cyberShell .primary{font-family:"Courier New",monospace;letter-spacing:.6px}
+.cyberShell .advancedGrid,.cyberShell .grid{gap:10px}
+.cyberShell .cyberCommand{box-shadow:0 0 40px rgba(0,255,102,.08),inset 0 0 30px rgba(0,255,102,.04)}
+@keyframes nexusSweep{to{transform:translateX(100%)}}
+@media(max-width:1100px){
+  .commandStrip{grid-template-columns:1fr}
+  .commandIdentity{border-right:0;border-bottom:1px solid #164d29;padding-bottom:10px}
+  .commandLive{min-height:60px}
+}
+@media(max-width:700px){
+  .commandTelemetry{grid-template-columns:1fr 1fr}
+  .commandTelemetry>div:last-child{grid-column:span 2}
+  .cyberShell .hero h2{font-size:21px}
+}
+@media(max-width:600px){
+  .commandTelemetry{grid-template-columns:1fr 1fr}
+  .commandTelemetry>div:last-child{grid-column:auto}
+  .commandStrip{padding:9px}
+  .commandIdentity b{font-size:9px}
+}
