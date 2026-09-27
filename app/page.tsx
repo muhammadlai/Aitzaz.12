@@ -1,3 +1,4 @@
+import HeavyCommandDashboard from "./HeavyCommandDashboard";
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
