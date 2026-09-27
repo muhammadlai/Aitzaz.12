@@ -54,6 +54,7 @@ export default function Home() {
   const [hydrated, setHydrated] = useState(false);
   const [booting, setBooting] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const [bootSound, setBootSound] = useState<AudioContext | null>(null);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(timer);
@@ -119,7 +120,24 @@ export default function Home() {
 
   if (booting) {
     return <BootScreen soundEnabled={soundEnabled} onEnter={() => {
-      setSoundEnabled(true);
+      try {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(90, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(420, ctx.currentTime + 0.35);
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
+        setBootSound(ctx);
+        setSoundEnabled(true);
+        window.setTimeout(() => ctx.close(), 900);
+      } catch {}
       setBooting(false);
     }} />;
   }
@@ -170,13 +188,14 @@ function BootScreen({ soundEnabled, onEnter }: { soundEnabled: boolean; onEnter:
   return <main className="bootScreen" onClick={onEnter}>
     <div className="bootGrid" />
     <div className="bootPanel">
-      <div className="bootGlitch">EARNING // ROBOT</div>
+      <div className="bootGlitch">EARNING // ROBOT // REV-BOT</div>
+      <div className="bootSignal">● SECURE CHANNEL ESTABLISHED</div>
       <h1>WELCOME TO THE<br/><span>DARK SYSTEM</span></h1>
       <div className="bootLines">{lines.map((line,i)=><div key={line} style={{animationDelay: `${i * 360}ms`}}><span>&gt;</span>{line}</div>)}</div>
       <button className="bootButton" onClick={(e)=>{e.stopPropagation(); onEnter();}}>
         {soundEnabled ? "ENTER COMMAND CENTER" : "ENTER + ACTIVATE SOUND"}
       </button>
-      <small>CYBER COMMAND INTERFACE • LOCAL TEST MODE</small>
+      <small>CYBER COMMAND INTERFACE • LOCAL TEST MODE • NO REAL HACKING FUNCTIONS</small>
     </div>
   </main>;
 }
