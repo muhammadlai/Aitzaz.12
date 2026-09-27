@@ -336,6 +336,8 @@ function EmailPanel({ connected, onConnect }: { connected: boolean; onConnect: (
 
 function TaskPanel({ tasks, setTasks }: { tasks: Task[]; setTasks: React.Dispatch<React.SetStateAction<Task[]>> }) {
   const [selectedId, setSelectedId] = useState<number | null>(tasks[0]?.id ?? null);
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiError, setAiError] = useState("");
   const selected = tasks.find(t => t.id === selectedId) ?? tasks[0];
 
   const update = (patch: Partial<Task>) => {
@@ -343,12 +345,36 @@ function TaskPanel({ tasks, setTasks }: { tasks: Task[]; setTasks: React.Dispatc
     setTasks(prev => prev.map(t => t.id === selected.id ? { ...t, ...patch } : t));
   };
 
-  const generateDraft = () => {
+  const generateDraft = async () => {
     if (!selected) return;
-    update({
-      proposal: `Hello, I can help with ${selected.title.toLowerCase()}. Based on the requirements, I can deliver accurate, organized work within the agreed scope and deadline. I will communicate clearly, confirm any missing details, and provide the final work for your review.`,
-      status: "Draft"
-    });
+    setAiError("");
+    if (!API_BASE) {
+      update({
+        proposal: `Hello, I can help with ${selected.title.toLowerCase()}. Based on the requirements, I can deliver accurate, organized work within the agreed scope and deadline. I will communicate clearly, confirm any missing details, and provide the final work for your review.`,
+        status: "Draft"
+      });
+      return;
+    }
+    setAiGenerating(true);
+    try {
+      const response = await fetch(`${API_BASE}/api/ai/proposal`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          taskTitle: selected.title,
+          requirements: selected.requirements,
+          skills: selected.skills,
+          budget: selected.budget
+        })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.proposal) throw new Error(data.error || "AI proposal generation failed.");
+      update({ proposal: data.proposal, status: "Draft" });
+    } catch (error) {
+      setAiError(error instanceof Error ? error.message : "AI proposal generation failed.");
+    } finally {
+      setAiGenerating(false);
+    }
   };
 
   const approve = () => {
@@ -391,12 +417,13 @@ function TaskPanel({ tasks, setTasks }: { tasks: Task[]; setTasks: React.Dispatc
     {selected && <section className="panel sectionGap">
       <div className="panelHead"><div><h3>Proposal Studio</h3><p>Generate → review → approve</p></div><Sparkles size={18}/></div>
       <div className="notice"><ShieldCheck size={16}/><span>No proposal is sent automatically. Approval is required.</span></div>
+      {aiError && <div className="notice"><ShieldCheck size={16}/><span>{aiError}</span></div>}
       <textarea className="taskInput taskArea proposalBox" value={selected.proposal} onChange={e => update({ proposal: e.target.value, status: "Draft" })} placeholder="Click Generate draft to prepare a proposal..." />
       <div className="featureCard">
         <div className="featureIcon"><FileText size={19}/></div>
         <div><b>Status: {selected.status}</b><span>{selected.status === "Approved" ? "Approved and ready for the next backend send step." : "Draft requires your review."}</span></div>
-        <button className="primary" onClick={generateDraft}><Sparkles size={16}/> Generate draft</button>
-        <button className="inspect" disabled={!selected.proposal} onClick={approve}><CheckCircle2 size={16}/> Approve</button>
+        <button className="primary" onClick={generateDraft} disabled={aiGenerating}><Sparkles size={16}/> {aiGenerating ? "Generating..." : API_BASE ? "Generate with AI" : "Generate draft"}</button>
+        <button className="inspect" disabled={!selected.proposal || aiGenerating} onClick={approve}><CheckCircle2 size={16}/> Approve</button>
       </div>
     </section>}
   </div>;
