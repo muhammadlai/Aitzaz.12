@@ -54,7 +54,6 @@ export default function Home() {
   const [hydrated, setHydrated] = useState(false);
   const [booting, setBooting] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(false);
-  const [bootSound, setBootSound] = useState<AudioContext | null>(null);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(timer);
@@ -134,7 +133,6 @@ export default function Home() {
         osc.connect(gain).connect(ctx.destination);
         osc.start();
         osc.stop(ctx.currentTime + 0.5);
-        setBootSound(ctx);
         setSoundEnabled(true);
         window.setTimeout(() => ctx.close(), 900);
       } catch {}
