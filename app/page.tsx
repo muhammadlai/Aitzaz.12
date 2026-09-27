@@ -273,7 +273,7 @@ function Overview({ setTab, emailConnected, opportunities, saved, tasks, approve
         </div>
       </section>
     </section>
-    <CyberCommandPanel opportunities={opportunities} saved={saved} tasks={tasks} approved={approved} clients={clients} paid={paid} revbotRunning={revbotRunning}/>
+    <CyberCommandPanel opportunities={opportunities} saved={saved} tasks={tasks} approved={approved} clients={clients} paid={paid} revbotRunning={revbotRunning}/>\n    <HeavyCommandDashboard opportunities={opportunities} saved={saved} tasks={tasks} approved={approved} clients={clients} paid={paid} revbotRunning={revbotRunning}/>
   </div>;
 }
 
