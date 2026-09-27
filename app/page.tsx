@@ -277,7 +277,9 @@ function OpportunityPanel({ filtered, query, setQuery, category, setCategory, sa
   </div>;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";\n\nfunction EmailPanel({ connected, onConnect }: { connected: boolean; onConnect: () => void }) {
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+
+function EmailPanel({ connected, onConnect }: { connected: boolean; onConnect: () => void }) {
   return <div className="grid emailGrid">
     <section className="panel">
       <div className="panelHead"><div><h3>Email Agent</h3><p>Inbox monitoring preparation</p></div><Mail size={18}/></div>
