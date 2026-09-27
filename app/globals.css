@@ -168,3 +168,42 @@
   .commandStrip{padding:9px}
   .commandIdentity b{font-size:9px}
 }
+
+
+/* NEXUS HEAVY COMMAND GRID */
+.heavyDashboard{border:1px solid #176b38;border-radius:16px;background:radial-gradient(circle at 85% 15%,rgba(57,255,120,.09),transparent 28%),linear-gradient(145deg,#020805,#041109 55%,#020604);padding:18px;box-shadow:0 0 55px rgba(0,255,102,.09),inset 0 0 35px rgba(0,255,102,.035);position:relative;overflow:hidden}
+.heavyDashboard:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 0 49%,rgba(57,255,120,.025) 50%,transparent 51%),repeating-linear-gradient(0deg,transparent 0 23px,rgba(57,255,120,.018) 24px)}
+.heavyHeader{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;position:relative;z-index:1}
+.heavyKicker{color:#3c9e5a;font:8px "Courier New",monospace;letter-spacing:2px}
+.heavyHeader h2{margin:5px 0 5px;color:#d5ffe1;font:800 19px "Courier New",monospace;letter-spacing:1.5px}
+.heavyHeader p{margin:0;color:#5f8d6d;font-size:9px;max-width:650px;line-height:1.6}
+.coreBadge{display:flex;align-items:center;gap:7px;border:1px solid #257f43;background:#031109;padding:9px 11px;color:#61ff91;font:700 8px "Courier New",monospace;letter-spacing:1px;white-space:nowrap}
+.coreBadge i{width:6px;height:6px;border-radius:50%;background:#39ff78;box-shadow:0 0 12px #39ff78;animation:signalPulse 1.1s infinite}
+.heavyMetrics{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0 10px;position:relative;z-index:1}
+.heavyMetrics>div{border:1px solid #123d22;border-radius:9px;background:#010603;padding:10px;min-height:70px}
+.heavyMetrics span{display:flex;align-items:center;gap:5px;color:#568b67;font:7px "Courier New",monospace;letter-spacing:1px}
+.heavyMetrics b{display:block;color:#baffc9;font:800 19px "Courier New",monospace;margin-top:8px;text-shadow:0 0 10px rgba(57,255,120,.16)}
+.heavyMetrics small{display:block;color:#3f684c;font-size:7px;margin-top:2px}
+.heavyBody{display:grid;grid-template-columns:1.65fr .75fr;gap:10px;position:relative;z-index:1}
+.heavyTerminal,.heavyCore{border:1px solid #123d22;border-radius:10px;background:#010603;overflow:hidden}
+.heavyTerminalTop{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #10331d;color:#4fba6e;font:7px "Courier New",monospace;letter-spacing:1px}
+.heavyTerminalTop span{display:flex;align-items:center;gap:5px}
+.heavyTerminalTop span:last-child{color:#376c47}
+.heavyLogs{padding:7px 11px}
+.heavyLog{display:grid;grid-template-columns:24px 75px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #092213;font:8px "Courier New",monospace}
+.heavyLog:last-child{border-bottom:0}
+.logIndex{color:#285439}.heavyLog b{color:#5de886}.heavyLog>span:nth-child(3){color:#83ab8d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.heavyLog em{font-style:normal;color:#48e777;border:1px solid #155b30;padding:3px 5px;font-size:6px}
+.heavyCore{padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.coreRing{width:126px;height:126px;border-radius:50%;display:grid;place-items:center;border:1px solid #2b8d4c;background:radial-gradient(circle,#092313 0 40%,#020704 41%);box-shadow:0 0 30px rgba(57,255,120,.12),inset 0 0 25px rgba(57,255,120,.08);position:relative}
+.coreRing:before{content:"";position:absolute;inset:8px;border-radius:50%;border:1px dashed #1c5c32;animation:coreSpin 8s linear infinite}
+.coreRing div{text-align:center;position:relative}.coreRing span,.coreRing small{display:block;color:#43815a;font:7px "Courier New",monospace;letter-spacing:1px}.coreRing strong{display:block;color:#baffc9;font:800 24px "Courier New",monospace;margin:5px 0;text-shadow:0 0 12px #39ff7840}
+.coreStats{width:100%;margin-top:15px;display:grid;gap:7px}.coreStats>span{display:flex;align-items:center;gap:5px;color:#4e7d5c;font:7px "Courier New",monospace;border-bottom:1px solid #092213;padding-bottom:6px}.coreStats b{margin-left:auto;color:#6bff95}
+.cpuGlyph{font-size:6px;border:1px solid #276f3e;padding:2px;color:#58e983!important}
+.heavyModules{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;position:relative;z-index:1}
+.heavyModules>div{display:grid;grid-template-columns:20px 1fr auto;column-gap:7px;align-items:center;border:1px solid #113a20;background:#020805;border-radius:9px;padding:10px}
+.heavyModules svg{grid-row:span 2;color:#48e777}.heavyModules span{color:#5b956a;font:7px "Courier New",monospace;letter-spacing:.6px}.heavyModules b{color:#59f18a;font:700 7px "Courier New",monospace}.heavyModules small{grid-column:2 / span 2;color:#3d684b;font-size:7px;margin-top:3px}
+.heavyFooter{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid #12351f;color:#427052;font:7px "Courier New",monospace;letter-spacing:.6px;position:relative;z-index:1}
+.heavyFooter span:first-child{color:#6bff95}
+@keyframes coreSpin{to{transform:rotate(360deg)}}
+@media(max-width:900px){.heavyMetrics{grid-template-columns:repeat(3,1fr)}.heavyBody{grid-template-columns:1fr}.heavyCore{min-height:300px}.heavyModules{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.heavyDashboard{padding:12px}.heavyHeader{flex-direction:column}.heavyHeader h2{font-size:16px}.coreBadge{align-self:flex-start}.heavyMetrics{grid-template-columns:1fr 1fr}.heavyMetrics>div:last-child{grid-column:span 2}.heavyLog{grid-template-columns:20px 58px 1fr}.heavyLog em{display:none}.heavyModules{grid-template-columns:1fr}.heavyFooter{display:grid;grid-template-columns:1fr 1fr}}
