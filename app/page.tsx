@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Activity, Bot, BriefcaseBusiness, CheckCircle2, Clock3, DollarSign,
-  Inbox, Mail, Radar, Search, ShieldCheck, Sparkles, Star, Zap, FileText, CalendarDays
+  Inbox, Mail, Radar, Search, ShieldCheck, Sparkles, Star, Zap, FileText, CalendarDays,
+  Cpu, Terminal, Wifi, Gauge, Database, LockKeyhole
 } from "lucide-react";
 
 type Task = {
@@ -219,6 +220,7 @@ function BootScreen({ soundEnabled, onEnter }: { soundEnabled: boolean; onEnter:
 
 function Overview({ setTab, emailConnected, opportunities, saved, tasks, approved, clients, paid, revbotRunning }: { setTab: (t: "overview" | "revbot" | "opportunities" | "tasks" | "email" | "clients" | "earnings") => void; emailConnected: boolean; opportunities: number; saved: number; tasks: number; approved: number; clients: number; paid: number; revbotRunning: boolean }) {
   return <div>
+    <CommandStrip opportunities={opportunities} saved={saved} tasks={tasks} clients={clients} paid={paid} revbotRunning={revbotRunning} />
     <div className="hero">
       <div><div className="heroTitle"><Sparkles size={18}/> Phase 2 automation layer</div><h2>Discover work before you act.</h2><p>The opportunity workspace can filter, score and save work. Email connection is prepared for the next backend step.</p></div>
       <div className="heroStatus"><div className="bigPulse"><Zap size={21}/></div><div><b>Ready</b><span>Static test environment</span></div></div>
@@ -273,6 +275,23 @@ function Overview({ setTab, emailConnected, opportunities, saved, tasks, approve
     </section>
     <CyberCommandPanel opportunities={opportunities} saved={saved} tasks={tasks} approved={approved} clients={clients} paid={paid} revbotRunning={revbotRunning}/>
   </div>;
+}
+
+function CommandStrip({ opportunities, saved, tasks, clients, paid, revbotRunning }: { opportunities:number; saved:number; tasks:number; clients:number; paid:number; revbotRunning:boolean }) {
+  return <section className="commandStrip">
+    <div className="commandIdentity">
+      <div className="commandIcon"><Terminal size={19}/></div>
+      <div><span>ER // NEXUS</span><b>MASTER COMMAND CENTER</b></div>
+    </div>
+    <div className="commandTelemetry">
+      <div><span><Wifi size={12}/> NETWORK</span><b>SECURE</b></div>
+      <div><span><Cpu size={12}/> CORE</span><b>{revbotRunning ? "ACTIVE" : "STANDBY"}</b></div>
+      <div><span><Database size={12}/> DATA</span><b>{opportunities + tasks + clients}</b></div>
+      <div><span><Gauge size={12}/> QUEUE</span><b>{saved}</b></div>
+      <div><span><LockKeyhole size={12}/> PAYMENTS</span><b>{paid}</b></div>
+    </div>
+    <div className="commandLive"><i/> LIVE<br/><small>CONTROLLED MODE</small></div>
+  </section>;
 }
 
 function CyberCommandPanel({ opportunities, saved, tasks, approved, clients, paid, revbotRunning }: { opportunities:number; saved:number; tasks:number; approved:number; clients:number; paid:number; revbotRunning:boolean }) {
