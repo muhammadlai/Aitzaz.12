@@ -20,6 +20,9 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:lin
 </style><style>
 .proposal{margin-top:16px}.proposalGrid{display:grid;grid-template-columns:1fr 1.2fr;gap:14px}.field{margin-bottom:10px}.field label{display:block;color:#649879;font-size:11px;letter-spacing:1px;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;background:#030a06;border:1px solid #17472a;color:#d9ffe5;padding:11px;outline:none}.field textarea{min-height:150px;resize:vertical}.aiBtn{background:#0a1a10;border:1px solid #2cff78;color:#5dff98;padding:12px 16px;font-weight:900;cursor:pointer}.aiBtn:hover{box-shadow:0 0 20px #35ff8340}.proposalStatus{font-size:11px;color:#61ff9a;margin-top:9px;min-height:16px}.approval{border:1px solid #5b4720;background:#120e05;padding:13px;margin-top:10px;color:#c4a96a;font-size:12px}
 @media(max-width:900px){.proposalGrid{grid-template-columns:1fr}}
+</style><style>
+.clientLedger{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.formRow{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field input,.field select{width:100%;background:#030a06;border:1px solid #17472a;color:#d9ffe5;padding:11px}.saveBtn{background:#0a1a10;border:1px solid #2cff78;color:#5dff98;padding:11px 15px;font-weight:900;cursor:pointer}.records{margin-top:10px}.record{padding:11px;border:1px solid #123d25;background:#07120b;margin-bottom:8px;color:#9ac5a6;font-size:12px}.record b{color:#d7ffe5}.record button{float:right;background:transparent;border:1px solid #553434;color:#ff9999;padding:5px 8px;cursor:pointer}.total{font-size:28px;font-weight:900;color:#42ff89;margin:5px 0 14px}.ledgerBtns button{margin-right:7px;margin-bottom:5px;background:#07150b;border:1px solid #24633a;color:#75ff9f;padding:6px 9px;cursor:pointer}
+@media(max-width:900px){.clientLedger{grid-template-columns:1fr}.formRow{grid-template-columns:1fr}}
 </style></head>
 <body>
 <div class="shell">
@@ -84,4 +87,20 @@ drawOpps();drawTasks();
 function proposalTasks(){const s=$("proposalTask");s.innerHTML=tasks.length?tasks.map(t=>'<option value="'+t.id+'">'+t.title+'</option>').join(""):'<option value="">No task selected</option>'}
 function generateProposal(){const t=tasks.find(x=>String(x.id)===String($("proposalTask").value));const client=$("proposalClient").value.trim()||"the client";const req=$("proposalReq").value.trim()||"the requirements provided";if(!t){$("proposalStatus").textContent="Create a task first.";return}$("proposalStatus").textContent="AI DRAFT READY // review required";$("proposalText").value="Hello "+client+",\n\nI’d be happy to help with "+t.title+".\n\nBased on your requirements, I understand that the work involves "+req+". I can organize the work carefully, communicate clearly, and deliver according to the agreed scope and deadline.\n\nI’m ready to discuss the details and confirm the exact deliverables before starting.\n\nBest regards,\nEarning Robot";const x=document.createElement("div");x.className="line";x.innerHTML="<strong>[AI]</strong> Proposal draft prepared // human approval required";$("terminal").prepend(x)}
 $("generateProposal").onclick=generateProposal;proposalTasks();
+</script><section class="clientLedger">
+<div class="panel"><div class="pt"><b>CLIENT_WORKSPACE</b><span class="status">LOCAL</span></div>
+<div class="formRow"><div class="field"><label>CLIENT NAME</label><input id="clientName" placeholder="Client name"></div><div class="field"><label>EMAIL</label><input id="clientEmail" placeholder="client@email.com"></div></div>
+<div class="field"><label>COMPANY / PROJECT</label><input id="clientCompany" placeholder="Company or project"></div>
+<button class="saveBtn" id="saveClient">＋ ADD CLIENT</button><div id="clientRecords" class="records"></div></div>
+<div class="panel"><div class="pt"><b>EARNINGS_LEDGER</b><span class="status">MANUAL</span></div><div class="total" id="totalPaid">Rs 0</div>
+<div class="formRow"><div class="field"><label>WORK / CLIENT</label><input id="earningTitle" placeholder="Task or client"></div><div class="field"><label>AMOUNT</label><input id="earningAmount" type="number" placeholder="0"></div></div>
+<button class="saveBtn" id="saveEarning">＋ RECORD PAYMENT</button><div id="earningRecords" class="records"></div>
+</div></section><script>
+let clients=JSON.parse(localStorage.getItem("earningClients")||"[]"), earnings=JSON.parse(localStorage.getItem("earningEarnings")||"[]");
+function drawClients(){ $("clientRecords").innerHTML=clients.length?clients.map((c,i)=>'<div class="record"><button onclick="delClient('+i+')">REMOVE</button><b>'+c.name+'</b><br>'+c.email+' // '+(c.company||"Independent project")+'</div>').join(""):'<div class="empty">No clients recorded.</div>'}
+function drawEarnings(){const paid=earnings.reduce((a,e)=>a+Number(e.amount||0),0);$("totalPaid").textContent="Rs "+paid.toLocaleString();$("earningRecords").innerHTML=earnings.length?earnings.map((e,i)=>'<div class="record"><button onclick="delEarning('+i+')">REMOVE</button><b>Rs '+Number(e.amount).toLocaleString()+'</b> // '+e.title+'<br>MANUAL RECORD // NOT A BANK BALANCE</div>').join(""):'<div class="empty">No payments recorded.</div>'}
+$("saveClient").onclick=()=>{const name=$("clientName").value.trim();if(!name)return;clients.push({name,email:$("clientEmail").value.trim(),company:$("clientCompany").value.trim()});localStorage.setItem("earningClients",JSON.stringify(clients));$("clientName").value="";$("clientEmail").value="";$("clientCompany").value="";drawClients()};
+$("saveEarning").onclick=()=>{const title=$("earningTitle").value.trim(),amount=$("earningAmount").value;if(!title||!amount)return;earnings.push({title,amount});localStorage.setItem("earningEarnings",JSON.stringify(earnings));$("earningTitle").value="";$("earningAmount").value="";drawEarnings()};
+function delClient(i){clients.splice(i,1);localStorage.setItem("earningClients",JSON.stringify(clients));drawClients()} function delEarning(i){earnings.splice(i,1);localStorage.setItem("earningEarnings",JSON.stringify(earnings));drawEarnings()}
+drawClients();drawEarnings();
 </script></body></html>
