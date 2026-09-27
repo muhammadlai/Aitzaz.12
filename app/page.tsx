@@ -253,7 +253,46 @@ function Overview({ setTab, emailConnected, opportunities, saved, tasks, approve
         </div>
       </section>
     </section>
+    <CyberCommandPanel opportunities={opportunities} saved={saved} tasks={tasks} approved={approved} clients={clients} paid={paid} revbotRunning={revbotRunning}/>
   </div>;
+}
+
+function CyberCommandPanel({ opportunities, saved, tasks, approved, clients, paid, revbotRunning }: { opportunities:number; saved:number; tasks:number; approved:number; clients:number; paid:number; revbotRunning:boolean }) {
+  const logs = [
+    ["11:42:08", "REV-BOT", revbotRunning ? "AUTOMATION CORE ACTIVE" : "AUTOMATION CORE STANDBY"],
+    ["11:42:04", "RADAR", `${opportunities} opportunity records loaded`],
+    ["11:41:59", "TASK", `${tasks} task pipeline records indexed`],
+    ["11:41:55", "SECURITY", "APPROVAL GATE: ENABLED"],
+    ["11:41:51", "CLIENT", `${clients} client workspace records available`],
+    ["11:41:47", "LEDGER", `${paid} confirmed paid records • ${saved} saved for review`]
+  ];
+
+  return <section className="cyberCommand sectionGap">
+    <div className="cyberCommandHeader">
+      <div><span className="terminalLabel">REV-BOT // COMMAND MATRIX</span><h3>LIVE SYSTEM TELEMETRY</h3></div>
+      <span className="onlineBadge"><i/> ONLINE</span>
+    </div>
+    <div className="cyberMatrix">
+      <div className="terminalPanel">
+        <div className="terminalTop"><span>ACTIVITY_STREAM</span><span>LIVE</span></div>
+        <div className="terminalLogs">
+          {logs.map(([time, source, message]) => <div className="terminalLine" key={time + source}>
+            <span className="terminalTime">{time}</span><b>[{source}]</b><span>{message}</span>
+          </div>)}
+        </div>
+      </div>
+      <div className="securityPanel">
+        <div className="terminalTop"><span>SECURITY_STATUS</span><span>LOCKED</span></div>
+        <div className="securityRows">
+          <div><span>PUBLIC FRONTEND</span><b>SAFE</b></div>
+          <div><span>APPROVAL GATE</span><b>ACTIVE</b></div>
+          <div><span>AUTO-SEND</span><b>BLOCKED</b></div>
+          <div><span>FAKE EARNINGS</span><b>BLOCKED</b></div>
+          <div><span>BACKEND SECRETS</span><b>SERVER ONLY</b></div>
+        </div>
+      </div>
+    </div>
+  </section>;
 }
 
 function OpportunityPanel({ filtered, query, setQuery, category, setCategory, save, createTask }: { filtered: Opportunity[]; query: string; setQuery: (v: string) => void; category: string; setCategory: (v: string) => void; save: (id: number) => void; createTask: (o: Opportunity) => void }) {
