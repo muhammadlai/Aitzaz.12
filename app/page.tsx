@@ -161,7 +161,8 @@ export default function Home() {
           <div className="topRight"><div className="status"><span className="pulse"></span>AUTOMATION READY <span className="topClock">{now.toLocaleTimeString()}</span></div><div className="avatar">ER</div></div>
         </header>
 
-        {tab === "overview" && <Overview setTab={setTab} emailConnected={emailConnected} opportunities={items.length} saved={savedCount} tasks={tasks.length} approved={approvedCount} clients={clients.length} paid={paidCount} revbotRunning={revbotRunning}/>}\n        {tab === "revbot" && <RevBotPanel running={revbotRunning} setRunning={setRevbotRunning} goal={revbotGoal} setGoal={setRevbotGoal} tasks={tasks} clients={clients} earnings={earnings}/>}
+        {tab === "overview" && <Overview setTab={setTab} emailConnected={emailConnected} opportunities={items.length} saved={savedCount} tasks={tasks.length} approved={approvedCount} clients={clients.length} paid={paidCount} revbotRunning={revbotRunning}/>}
+        {tab === "revbot" && <RevBotPanel running={revbotRunning} setRunning={setRevbotRunning} goal={revbotGoal} setGoal={setRevbotGoal} tasks={tasks} clients={clients} earnings={earnings}/>}
         {tab === "opportunities" && <OpportunityPanel filtered={filtered} query={query} setQuery={setQuery} category={category} setCategory={setCategory} save={save} createTask={createTask}/>}
         {tab === "tasks" && <TaskPanel tasks={tasks} setTasks={setTasks} />}
         {tab === "clients" && <ClientPanel clients={clients} setClients={setClients} tasks={tasks} />}
