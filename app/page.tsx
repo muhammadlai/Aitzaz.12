@@ -52,6 +52,8 @@ export default function Home() {
   const [revbotGoal, setRevbotGoal] = useState("Find and prepare suitable work");
   const [now, setNow] = useState(new Date());
   const [hydrated, setHydrated] = useState(false);
+  const [booting, setBooting] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(timer);
@@ -72,6 +74,11 @@ export default function Home() {
       }
     } catch {}
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setBooting(false), 4200);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -110,8 +117,15 @@ export default function Home() {
     setTab("tasks");
   };
 
+  if (booting) {
+    return <BootScreen soundEnabled={soundEnabled} onEnter={() => {
+      setSoundEnabled(true);
+      setBooting(false);
+    }} />;
+  }
+
   return (
-    <main className="shell">
+    <main className="shell cyberShell">
       <aside className="sidebar">
         <div className="brand"><div className="brandIcon"><Bot size={22}/></div><div><b>EARNING</b><span>ROBOT</span></div></div>
         <div className="navLabel">CONTROL CENTER</div>
@@ -140,6 +154,31 @@ export default function Home() {
       </section>
     </main>
   );
+}
+
+
+function BootScreen({ soundEnabled, onEnter }: { soundEnabled: boolean; onEnter: () => void }) {
+  const lines = [
+    "INITIALIZING DARK SYSTEM...",
+    "LOADING REV-BOT CORE...",
+    "SCANNING WORKSPACE...",
+    "SECURITY LAYER: ACTIVE",
+    "OPPORTUNITY RADAR: ONLINE",
+    "HUMAN APPROVAL: REQUIRED",
+    "SYSTEM STATUS: READY"
+  ];
+  return <main className="bootScreen" onClick={onEnter}>
+    <div className="bootGrid" />
+    <div className="bootPanel">
+      <div className="bootGlitch">EARNING // ROBOT</div>
+      <h1>WELCOME TO THE<br/><span>DARK SYSTEM</span></h1>
+      <div className="bootLines">{lines.map((line,i)=><div key={line} style={{animationDelay: `${i * 360}ms`}}><span>&gt;</span>{line}</div>)}</div>
+      <button className="bootButton" onClick={(e)=>{e.stopPropagation(); onEnter();}}>
+        {soundEnabled ? "ENTER COMMAND CENTER" : "ENTER + ACTIVATE SOUND"}
+      </button>
+      <small>CYBER COMMAND INTERFACE • LOCAL TEST MODE</small>
+    </div>
+  </main>;
 }
 
 function Overview({ setTab, emailConnected, opportunities, saved, tasks, approved, clients, paid, revbotRunning }: { setTab: (t: "overview" | "revbot" | "opportunities" | "tasks" | "email" | "clients" | "earnings") => void; emailConnected: boolean; opportunities: number; saved: number; tasks: number; approved: number; clients: number; paid: number; revbotRunning: boolean }) {
