@@ -51,10 +51,35 @@ export default function Home() {
   const [revbotRunning, setRevbotRunning] = useState(false);
   const [revbotGoal, setRevbotGoal] = useState("Find and prepare suitable work");
   const [now, setNow] = useState(new Date());
+  const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("earning-robot-state");
+      if (saved) {
+        const state = JSON.parse(saved);
+        if (Array.isArray(state.items)) setItems(state.items);
+        if (Array.isArray(state.tasks)) setTasks(state.tasks);
+        if (Array.isArray(state.clients)) setClients(state.clients);
+        if (Array.isArray(state.earnings)) setEarnings(state.earnings);
+        if (typeof state.revbotRunning === "boolean") setRevbotRunning(state.revbotRunning);
+        if (typeof state.revbotGoal === "string") setRevbotGoal(state.revbotGoal);
+        if (typeof state.emailConnected === "boolean") setEmailConnected(state.emailConnected);
+      }
+    } catch {}
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    window.localStorage.setItem("earning-robot-state", JSON.stringify({
+      items, tasks, clients, earnings, revbotRunning, revbotGoal, emailConnected
+    }));
+  }, [hydrated, items, tasks, clients, earnings, revbotRunning, revbotGoal, emailConnected]);
   const savedCount = items.filter(o => o.status === "Saved").length;
   const approvedCount = tasks.filter(t => t.status === "Approved").length;
   const paidCount = earnings.filter(e => e.status === "Paid").length;
